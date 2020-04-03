@@ -1,0 +1,758 @@
+#VRML_SIM R2019b utf8
+WorldInfo {
+  CFM 0.0001
+  ERP 0.6
+  basicTimeStep 5
+  contactProperties [
+    ContactProperties {
+      material2 "floor"
+      coulombFriction [
+        2
+      ]
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.9994948205443417 -0.031715355338504565 -0.0020591116498396675 0.12881227322107494
+  position 0.16234589677041122 0.764674443169847 3.269949835717288
+}
+TexturedBackground {
+  texture "noon_cloudy_mountains"
+}
+TexturedBackgroundLight {
+}
+Floor {
+  contactMaterial "floor"
+  size 8 4
+}
+DEF Japy Robot {
+  translation 0 0.7 0
+  children [
+    DEF body Group {
+      children [
+        Gyro {
+          children [
+            DEF Gyro Shape {
+              geometry Sphere {
+                radius 0.05
+              }
+            }
+          ]
+          name "G"
+          boundingObject USE Gyro
+          physics Physics {
+            density -1
+            mass 0.1
+          }
+        }
+        InertialUnit {
+          children [
+            DEF Inertial Shape {
+              geometry Sphere {
+                radius 0.05
+              }
+            }
+          ]
+          name "I"
+          boundingObject USE Inertial
+          physics Physics {
+            density -1
+            mass 0.1
+            centerOfMass [
+              0 0 0
+            ]
+          }
+        }
+        Accelerometer {
+          children [
+            DEF Accelerometer Shape {
+              geometry Sphere {
+                radius 0.05
+              }
+            }
+          ]
+          name "A"
+          boundingObject USE Accelerometer
+          physics Physics {
+            density -1
+            mass 0.1
+          }
+          rotationStep 0.261799
+        }
+        DEF bdoy_shape Shape {
+          appearance PBRAppearance {
+            baseColor 0.5 0.5 0.5
+          }
+          geometry Box {
+            size 1 0.1 0.5
+          }
+        }
+        TouchSensor {
+          children [
+            DEF touchSensor Shape {
+              geometry Sphere {
+                radius 0.05
+              }
+            }
+          ]
+          name "body_touch sensor"
+          boundingObject USE touchSensor
+          physics Physics {
+            density -1
+            mass 0.1
+          }
+          type "force-3d"
+        }
+      ]
+    }
+    DEF LF Transform {
+      translation 0.4 -0.05 -0.18
+      children [
+        DEF LF1 HingeJoint {
+          jointParameters HingeJointParameters {
+          }
+          device [
+            RotationalMotor {
+              name "LF1_motor"
+              maxVelocity 30
+              maxTorque 10000
+            }
+            PositionSensor {
+              name "LF1_position"
+            }
+          ]
+          endPoint DEF LF1 Solid {
+            rotation 0 0 1 -1.5708003061004252
+            children [
+              DEF LF1_shape Shape {
+                appearance PBRAppearance {
+                }
+                geometry Cylinder {
+                  height 0.06
+                  radius 0.02
+                }
+              }
+              DEF LF2 Transform {
+                translation 0.05 0 0
+                rotation 1 0 0 -1.5707996938995747
+                children [
+                  DEF LF2 HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis 0 1 0
+                    }
+                    device [
+                      RotationalMotor {
+                        name "LF2_motor"
+                        maxVelocity 30
+                        maxTorque 10000
+                      }
+                      PositionSensor {
+                        name "LF2_position"
+                      }
+                    ]
+                    endPoint DEF LF2 Solid {
+                      rotation 0 1 0 0.26180030610042526
+                      children [
+                        DEF LF2_sharp Shape {
+                          appearance PBRAppearance {
+                          }
+                          geometry Cylinder {
+                            height 0.04
+                            radius 0.03
+                          }
+                        }
+                        DEF leg1 Transform {
+                          translation 0.15 0 0
+                          rotation 0 0 1 1.5707996938995747
+                          children [
+                            DEF leg1_shape Shape {
+                              appearance PBRAppearance {
+                              }
+                              geometry Cylinder {
+                                height 0.3
+                                radius 0.02
+                              }
+                            }
+                            DEF LF3 Transform {
+                              translation 0 -0.15 0
+                              rotation 0 0 1 -1.5708003061004252
+                              children [
+                                DEF LF3 HingeJoint {
+                                  jointParameters HingeJointParameters {
+                                    axis 0 1 0
+                                  }
+                                  device [
+                                    RotationalMotor {
+                                      name "LF3_motor"
+                                      maxVelocity 30
+                                      maxTorque 10000
+                                    }
+                                    PositionSensor {
+                                      name "LF3_position"
+                                    }
+                                  ]
+                                  endPoint DEF LF3 Solid {
+                                    rotation 0 1 0 -0.5235996938995747
+                                    children [
+                                      DEF LF3_sharp Shape {
+                                        appearance PBRAppearance {
+                                        }
+                                        geometry Cylinder {
+                                          height 0.04
+                                          radius 0.03
+                                        }
+                                      }
+                                      DEF leg2 Transform {
+                                        translation 0.15 0 0
+                                        rotation 0 0 1 1.5708003061004252
+                                        children [
+                                          DEF leg2 Shape {
+                                            appearance PBRAppearance {
+                                            }
+                                            geometry Cylinder {
+                                              height 0.3
+                                              radius 0.02
+                                            }
+                                          }
+                                          DEF foot Transform {
+                                            translation 0 -0.15 0
+                                            rotation 0 0 1 -1.5708003061004252
+                                            children [
+                                              DEF foot TouchSensor {
+                                                children [
+                                                  DEF foot_shape Shape {
+                                                    appearance PBRAppearance {
+                                                    }
+                                                    geometry Sphere {
+                                                      radius 0.02
+                                                    }
+                                                  }
+                                                ]
+                                                boundingObject USE foot_shape
+                                                physics Physics {
+                                                }
+                                                rotationStep 0.261799
+                                                type "force-3d"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                    boundingObject USE LF3_sharp
+                                    physics Physics {
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                      boundingObject USE LF2_sharp
+                      physics Physics {
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+            boundingObject USE LF1_shape
+            physics Physics {
+            }
+          }
+        }
+      ]
+    }
+    DEF RF Transform {
+      translation 0.4 -0.05 0.18
+      children [
+        DEF RF1 HingeJoint {
+          jointParameters HingeJointParameters {
+          }
+          device [
+            RotationalMotor {
+              name "RF1_motor"
+              maxVelocity 30
+              maxTorque 10000
+            }
+            PositionSensor {
+              name "RF1_position"
+            }
+          ]
+          endPoint DEF RF1 Solid {
+            rotation 0 0 1 -1.5708003061004252
+            children [
+              DEF RF1_shape Shape {
+                appearance PBRAppearance {
+                }
+                geometry Cylinder {
+                  height 0.06
+                  radius 0.02
+                }
+              }
+              DEF RF2 Transform {
+                translation 0.05 0 0
+                rotation 1 0 0 -1.5707996938995747
+                children [
+                  DEF RF2 HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis 0 1 0
+                    }
+                    device [
+                      RotationalMotor {
+                        name "RF2_motor"
+                        maxVelocity 30
+                        maxTorque 10000
+                      }
+                      PositionSensor {
+                        name "RF2_position"
+                      }
+                    ]
+                    endPoint DEF LF2 Solid {
+                      rotation 0 1 0 0.26180030610042526
+                      children [
+                        DEF RF2_sharp Shape {
+                          appearance PBRAppearance {
+                          }
+                          geometry Cylinder {
+                            height 0.04
+                            radius 0.03
+                          }
+                        }
+                        DEF leg1 Transform {
+                          translation 0.15 0 0
+                          rotation 0 0 1 1.5707996938995747
+                          children [
+                            DEF leg1_shape Shape {
+                              appearance PBRAppearance {
+                              }
+                              geometry Cylinder {
+                                height 0.3
+                                radius 0.02
+                              }
+                            }
+                            DEF RF3 Transform {
+                              translation 0 -0.15 0
+                              rotation 0 0 1 -1.5708003061004252
+                              children [
+                                DEF RF3 HingeJoint {
+                                  jointParameters HingeJointParameters {
+                                    axis 0 1 0
+                                  }
+                                  device [
+                                    RotationalMotor {
+                                      name "RF3_motor"
+                                      maxVelocity 30
+                                      maxTorque 10000
+                                    }
+                                    PositionSensor {
+                                      name "RF3_position"
+                                    }
+                                  ]
+                                  endPoint DEF RF3 Solid {
+                                    rotation 0 1 0 -0.5235996938995747
+                                    children [
+                                      DEF RF3_sharp Shape {
+                                        appearance PBRAppearance {
+                                        }
+                                        geometry Cylinder {
+                                          height 0.04
+                                          radius 0.03
+                                        }
+                                      }
+                                      DEF leg2 Transform {
+                                        translation 0.15 0 0
+                                        rotation 0 0 1 1.5708003061004252
+                                        children [
+                                          DEF leg2 Shape {
+                                            appearance PBRAppearance {
+                                            }
+                                            geometry Cylinder {
+                                              height 0.3
+                                              radius 0.02
+                                            }
+                                          }
+                                          DEF foot Transform {
+                                            translation 0 -0.15 0
+                                            rotation 0 0 1 -1.5708003061004252
+                                            children [
+                                              DEF foot TouchSensor {
+                                                children [
+                                                  DEF foot_shape Shape {
+                                                    appearance PBRAppearance {
+                                                    }
+                                                    geometry Sphere {
+                                                      radius 0.02
+                                                    }
+                                                  }
+                                                ]
+                                                name "RF_touch sensor"
+                                                boundingObject USE foot_shape
+                                                physics Physics {
+                                                }
+                                                type "force-3d"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                    boundingObject USE RF3_sharp
+                                    physics Physics {
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                      boundingObject USE RF2_sharp
+                      physics Physics {
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+            name "solid(1)"
+            boundingObject USE RF1_shape
+            physics Physics {
+            }
+          }
+        }
+      ]
+    }
+    DEF RH Transform {
+      translation -0.4 -0.05 0.18
+      children [
+        DEF RH1 HingeJoint {
+          jointParameters HingeJointParameters {
+          }
+          device [
+            RotationalMotor {
+              name "RH1_motor"
+              maxVelocity 30
+              maxTorque 10000
+            }
+            PositionSensor {
+              name "RH1_position"
+            }
+          ]
+          endPoint DEF RH1 Solid {
+            rotation 0 0 1 -1.5708003061004252
+            children [
+              DEF RH1_shape Shape {
+                appearance PBRAppearance {
+                }
+                geometry Cylinder {
+                  height 0.06
+                  radius 0.02
+                }
+              }
+              DEF RH2 Transform {
+                translation 0.05 0 0
+                rotation 1 0 0 -1.5707996938995747
+                children [
+                  DEF RH2 HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis 0 1 0
+                    }
+                    device [
+                      RotationalMotor {
+                        name "RH2_motor"
+                        maxVelocity 30
+                        maxTorque 10000
+                      }
+                      PositionSensor {
+                        name "RH2_position"
+                      }
+                    ]
+                    endPoint DEF LF2 Solid {
+                      rotation 0 1 0 0.26180030610042526
+                      children [
+                        DEF LF2_sharp Shape {
+                          appearance PBRAppearance {
+                          }
+                          geometry Cylinder {
+                            height 0.04
+                            radius 0.03
+                          }
+                        }
+                        DEF leg1 Transform {
+                          translation 0.15 0 0
+                          rotation 0 0 1 1.5707996938995747
+                          children [
+                            DEF leg1_shape Shape {
+                              appearance PBRAppearance {
+                              }
+                              geometry Cylinder {
+                                height 0.3
+                                radius 0.02
+                              }
+                            }
+                            DEF LF3 Transform {
+                              translation 0 -0.15 0
+                              rotation 0 0 1 -1.5708003061004252
+                              children [
+                                DEF RH3 HingeJoint {
+                                  jointParameters HingeJointParameters {
+                                    axis 0 1 0
+                                  }
+                                  device [
+                                    RotationalMotor {
+                                      name "RH3_motor"
+                                      maxVelocity 30
+                                      maxTorque 10000
+                                    }
+                                    PositionSensor {
+                                      name "RH3_position"
+                                    }
+                                  ]
+                                  endPoint DEF RH3 Solid {
+                                    rotation 0 1 0 -0.5235996938995747
+                                    children [
+                                      DEF RH3_sharp Shape {
+                                        appearance PBRAppearance {
+                                        }
+                                        geometry Cylinder {
+                                          height 0.04
+                                          radius 0.03
+                                        }
+                                      }
+                                      DEF leg2 Transform {
+                                        translation 0.15 0 0
+                                        rotation 0 0 1 1.5708003061004252
+                                        children [
+                                          DEF leg2 Shape {
+                                            appearance PBRAppearance {
+                                            }
+                                            geometry Cylinder {
+                                              height 0.3
+                                              radius 0.02
+                                            }
+                                          }
+                                          DEF foot Transform {
+                                            translation 0 -0.15 0
+                                            rotation 0 0 1 -1.5708003061004252
+                                            children [
+                                              DEF foot TouchSensor {
+                                                children [
+                                                  DEF foot_shape Shape {
+                                                    appearance PBRAppearance {
+                                                    }
+                                                    geometry Sphere {
+                                                      radius 0.02
+                                                    }
+                                                  }
+                                                ]
+                                                name "RH_touch sensor"
+                                                boundingObject USE foot_shape
+                                                physics Physics {
+                                                }
+                                                type "force-3d"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                    boundingObject USE RH3_sharp
+                                    physics Physics {
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                      boundingObject USE LF2_sharp
+                      physics Physics {
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+            name "solid(2)"
+            boundingObject USE RH1_shape
+            physics Physics {
+            }
+          }
+        }
+      ]
+    }
+    DEF LH Transform {
+      translation -0.4 -0.05 -0.18
+      children [
+        DEF LH1 HingeJoint {
+          jointParameters HingeJointParameters {
+          }
+          device [
+            RotationalMotor {
+              name "LH1_motor"
+              maxVelocity 30
+              maxTorque 10000
+            }
+            PositionSensor {
+              name "LH1_position"
+            }
+          ]
+          endPoint DEF LH1 Solid {
+            rotation 0 0 1 -1.5708003061004252
+            children [
+              DEF LH1_shape Shape {
+                appearance PBRAppearance {
+                }
+                geometry Cylinder {
+                  height 0.06
+                  radius 0.02
+                }
+              }
+              DEF LH2 Transform {
+                translation 0.05 0 0
+                rotation 1 0 0 -1.5707996938995747
+                children [
+                  DEF LH2 HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis 0 1 0
+                    }
+                    device [
+                      RotationalMotor {
+                        name "LH2_motor"
+                        maxVelocity 30
+                        maxTorque 10000
+                      }
+                      PositionSensor {
+                        name "LH2_position"
+                      }
+                    ]
+                    endPoint DEF LH2 Solid {
+                      rotation 0 1 0 0.26180030610042526
+                      children [
+                        DEF LH2_sharp Shape {
+                          appearance PBRAppearance {
+                          }
+                          geometry Cylinder {
+                            height 0.04
+                            radius 0.03
+                          }
+                        }
+                        DEF leg1 Transform {
+                          translation 0.15 0 0
+                          rotation 0 0 1 1.5707996938995747
+                          children [
+                            DEF leg1_shape Shape {
+                              appearance PBRAppearance {
+                              }
+                              geometry Cylinder {
+                                height 0.3
+                                radius 0.02
+                              }
+                            }
+                            DEF LH3 Transform {
+                              translation 0 -0.15 0
+                              rotation 0 0 1 -1.5708003061004252
+                              children [
+                                DEF LH3 HingeJoint {
+                                  jointParameters HingeJointParameters {
+                                    axis 0 1 0
+                                  }
+                                  device [
+                                    RotationalMotor {
+                                      name "LH3_motor"
+                                      maxVelocity 30
+                                      maxTorque 10000
+                                    }
+                                    PositionSensor {
+                                      name "LH3_position"
+                                    }
+                                  ]
+                                  endPoint DEF LF3 Solid {
+                                    rotation 0 1 0 -0.5235996938995747
+                                    children [
+                                      DEF LH3_sharp Shape {
+                                        appearance PBRAppearance {
+                                        }
+                                        geometry Cylinder {
+                                          height 0.04
+                                          radius 0.03
+                                        }
+                                      }
+                                      DEF leg2 Transform {
+                                        translation 0.15 0 0
+                                        rotation 0 0 1 1.5708003061004252
+                                        children [
+                                          DEF leg2 Shape {
+                                            appearance PBRAppearance {
+                                            }
+                                            geometry Cylinder {
+                                              height 0.3
+                                              radius 0.02
+                                            }
+                                          }
+                                          DEF foot Transform {
+                                            translation 0 -0.15 0
+                                            rotation 0 0 1 -1.5708003061004252
+                                            children [
+                                              DEF foot TouchSensor {
+                                                children [
+                                                  DEF foot_shape Shape {
+                                                    appearance PBRAppearance {
+                                                    }
+                                                    geometry Sphere {
+                                                      radius 0.02
+                                                    }
+                                                  }
+                                                ]
+                                                name "LH_touch sensor"
+                                                boundingObject USE foot_shape
+                                                physics Physics {
+                                                }
+                                                type "force-3d"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                    boundingObject USE LH3_sharp
+                                    physics Physics {
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                      boundingObject USE LH2_sharp
+                      physics Physics {
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+            name "solid(3)"
+            boundingObject USE LH1_shape
+            physics Physics {
+            }
+          }
+        }
+      ]
+    }
+  ]
+  name "Japy3.0"
+  contactMaterial "floor"
+  boundingObject USE bdoy_shape
+  physics Physics {
+    density -1
+    mass 10
+  }
+  rotationStep 0.261799
+  controller "cc_controller"
+  selfCollision TRUE
+}
