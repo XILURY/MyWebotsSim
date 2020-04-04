@@ -35,13 +35,11 @@ public class Controller {
     // The arguments of the main function can be specified by the
     // "controllerArgs" field of the Robot node
     public static void main(String[] args) {
-        double[] angle = new double[]{0,0.262,-0.524};
-        System.out.println(Arrays.toString(Kinematics(angle)));
-        double[] postion = new double[3];
-        postion[0] = Kinematics(angle)[0]-0.4;
-        postion[1] = Kinematics(angle)[1]-0.18;
-        postion[2] = Kinematics(angle)[2]+0.05;
-       System.out.println(Arrays.toString(InverseKinematics(postion)));
+//        double[] angle = new double[]{0,0.262,-0.524}; //初始位置
+       double[] angle = new double[]{0.1,0.15,0.356};
+      System.out.println(Arrays.toString(Kinematics(angle)));
+//       double[] position = new double[]{0.39428,0.18,-0.69884};
+       System.out.println(Arrays.toString(InverseKinematics(Kinematics(angle))));
 
         // create the Robot instance.
 //        Robot robot = new Robot();
@@ -72,7 +70,7 @@ public class Controller {
     }
 
     /**
-     * 运动学求解 根据关节角度求足端在机身坐标系下的位置
+     * 运动学求解 根据关节角度求足端在机身坐标系下的位置 以右前腿为例
      * @param  angle 以矩阵形式输入关节角度
      * 验证正确 单腿的
      */
@@ -81,17 +79,24 @@ public class Controller {
         double x = angle[0];
         double y = angle[1];
         double z = angle[2];
-        BigDecimal p1 = BigDecimal.valueOf(L2*Math.sin(y) + L3*Math.sin(y+z) + X_REF).setScale(3,BigDecimal.ROUND_HALF_UP);
-        BigDecimal p2 = BigDecimal.valueOf(Math.sin(x)*(L3*Math.cos(y+z) + L2*Math.cos(y) + L1) + Y_REF).setScale(3,BigDecimal.ROUND_HALF_UP);;
-        BigDecimal p3 = BigDecimal.valueOf(-(L1*Math.cos(x) + L2*Math.cos(x)*Math.cos(y) + L3*Math.cos(x)*Math.cos(y+z)) + Z_REF).setScale(3,BigDecimal.ROUND_HALF_UP);;
+//        double p1 = L2*Math.sin(y) + L3*Math.sin(y+z) + X_REF;
+//        double p2 = Math.sin(x)*(L3*Math.cos(y+z) + L2*Math.cos(y) + L1) + Y_REF;
+//        double p3 = -(L1*Math.cos(x) + L2*Math.cos(x)*Math.cos(y) + L3*Math.cos(x)*Math.cos(y+z)) + Z_REF;
+
+        BigDecimal p1 = BigDecimal.valueOf(L2*Math.sin(y) + L3*Math.sin(y+z) + X_REF).setScale(5,BigDecimal.ROUND_HALF_UP);
+        BigDecimal p2 = BigDecimal.valueOf(Math.sin(x)*(L3*Math.cos(y+z) + L2*Math.cos(y) + L1) + Y_REF).setScale(5,BigDecimal.ROUND_HALF_UP);;
+        BigDecimal p3 = BigDecimal.valueOf(-(L1*Math.cos(x) + L2*Math.cos(x)*Math.cos(y) + L3*Math.cos(x)*Math.cos(y+z)) + Z_REF).setScale(5,BigDecimal.ROUND_HALF_UP);;
         position[0] = p1.doubleValue();
-        position[1] = p2.doubleValue();;
-        position[2] = p3.doubleValue();;
+        position[1] = p2.doubleValue();
+        position[2] = p3.doubleValue();
+//        position[0] = p1;
+//        position[1] = p2;
+//        position[2] = p3;
         return position;
     }
 
     /**
-     * 逆运动学求解 过渡坐标系下的足端位置与关节角的关系
+     * 逆运动学求解 机身坐标系下的足端位置与关节角的关系?
      * @param position0 过渡坐标系下的足端位置
      * 验证正确 单腿的
      */
@@ -99,17 +104,22 @@ public class Controller {
         double p1 = position0[0];
         double p2 = position0[1];
         double p3 = position0[2];
-        BigDecimal xx = BigDecimal.valueOf(Math.atan(p2/p1));
-        double x = xx.doubleValue();
-        double dsa = Math.acos((Math.pow((p1*Math.cos(x)+p2*Math.sin(x)-L1),2)+Math.pow(p3,2)-Math.pow(L2,2)-Math.pow(L3,2))/(2*L2*L3));
-        BigDecimal zz = BigDecimal.valueOf(dsa);
-        double z = zz.doubleValue();
-        BigDecimal yy = BigDecimal.valueOf(Math.asin((-L3*Math.sin(z))/(Math.pow((p1*Math.cos(x)+p2*Math.sin(x)-L1),2)+Math.pow(p3,2)))-Math.atan(p3/(p2*Math.sin(x)+p1*Math.cos(x)+L1)));
-        double y = yy.doubleValue();
+
+        double x = Math.atan((-p2+Y_REF)/(p3-Z_REF));
+        double a = L1 +p3*Math.cos(x)-Z_REF*Math.cos(x)-p2*Math.sin(x)+Y_REF*Math.sin(x);
+        double z = Math.acos((Math.pow((p1-X_REF),2)+Math.pow(a,2)-Math.pow(L2,2)-Math.pow(L3,2))/(2*L2*L3));
+        double b = L2*Math.sin(z)+p1-X_REF;
+        double y ;
+        // b存在为零的情况
+        if(b == 0)
+            y = 0;
+        else {
+            y = 2 * Math.atan((a + Math.sqrt(Math.pow(a, 2) - b * L3 * Math.sin(z) + b * (p1 - X_REF))) / b);
+        }
         double[] result = new double[3];
-        result[0] = x;
-        result[1] = y;
-        result[2] = z;
+        result[0] = BigDecimal.valueOf(x).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue();
+        result[1] = BigDecimal.valueOf(y).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue();
+        result[2] = BigDecimal.valueOf(z).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue();
         return result;
     }
 }
