@@ -14,7 +14,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.9994948205443417 -0.031715355338504565 -0.0020591116498396675 0.12881227322107494
-  position 0.16234589677041122 0.764674443169847 3.269949835717288
+  position 0.16208966956049836 0.7727832971500632 3.3325835986723678
 }
 TexturedBackground {
   texture "noon_cloudy_mountains"
@@ -753,6 +753,6 @@ DEF Japy Robot {
     mass 10
   }
   rotationStep 0.261799
-  controller "cc_controller"
+  controller "JavaController"
   selfCollision TRUE
 }
