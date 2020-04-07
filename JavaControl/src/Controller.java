@@ -39,45 +39,57 @@ public class Controller {
     public double zTrajectorySupport;
 
     // 定义摆动周期
-    public static double Tm;
+    public static double Tm = 2;
 
     // 定义步长、步高
-    public static double s;
-    public static double h;
+    public static double s = 0.1;
+    public static double h = 0.2;
 
+    public static double t;
 
     public static void main(String[] args) {
 //        double[] angle = new double[]{0,0.262,-0.524}; //初始位置
-        double[] angle = new double[]{0.1, 0.15, 0.356};
-//        System.out.println(Arrays.toString(Kinematics(angle)));
-//        System.out.println(Arrays.toString(InverseKinematics(Kinematics(angle))));
-//        System.out.println(Arrays.toString(Kinematics(InverseKinematics(Kinematics(angle)))));
 
-        Robot robot = new Robot();
-        int timeStep = (int) Math.round(robot.getBasicTimeStep());
+//       Robot robot = new Robot();
+//       int timeStep = (int) Math.round(robot.getBasicTimeStep());
         // 初始化电机 按对角腿控制分为两组，motors1的值与motors2一致
-        Motor[] motors1 = new Motor[6];
-        Motor[] motors2 = new Motor[6];
-        motors1[0] = robot.getMotor("RF1_motor");
-        motors1[1] = robot.getMotor("RF2_motor");
-        motors1[2] = robot.getMotor("RF3_motor");
-        motors1[3] = robot.getMotor("LF1_motor");
-        motors1[4] = robot.getMotor("LF2_motor");
-        motors1[5] = robot.getMotor("LF3_motor");
+//        Motor[] motors1 = new Motor[6];
+//        Motor[] motors2 = new Motor[6];
+//        motors1[0] = robot.getMotor("RF1_motor");
+//        motors1[1] = robot.getMotor("RF2_motor");
+//        motors1[2] = robot.getMotor("RF3_motor");
+//        motors1[3] = robot.getMotor("LF1_motor");
+//        motors1[4] = robot.getMotor("LF2_motor");
+//        motors1[5] = robot.getMotor("LF3_motor");
+//
+//        motors2[0] = robot.getMotor("LH1_motor");
+//        motors2[1] = robot.getMotor("LH2_motor");
+//        motors2[2] = robot.getMotor("LH3_motor");
+//        motors2[3] = robot.getMotor("RH1_motor");
+//        motors2[4] = robot.getMotor("RH2_motor");
+//        motors2[5] = robot.getMotor("RH3_motor");
+//
+//        while (robot.step(timeStep) != -1){
+//            double t = robot.getTime();
+//        }
 
-        motors2[0] = robot.getMotor("LH1_motor");
-        motors2[1] = robot.getMotor("LH2_motor");
-        motors2[2] = robot.getMotor("LH3_motor");
-        motors2[3] = robot.getMotor("RH1_motor");
-        motors2[4] = robot.getMotor("RH2_motor");
-        motors2[5] = robot.getMotor("RH3_motor");
+//        while (robot.step(timeStep) != -1){
+//            t = robot.getTime();
+//            for(int i=0;i<6;i++){
+//                motors1[i].setPosition(joint1(t)[i]);
+//                motors2[i].setPosition(joint2(t)[i]);
+//            }
+//        }
 
-        while (robot.step(timeStep) != -1){
-            // System.out.println(robot.getTime());
-            System.out.println(robot.step(timeStep));
+        // Test测试！
+        double t = 0.5;
+        while(t<20){
+            System.out.println(t+"  "+Arrays.toString(joint1(t))+"  "+Arrays.toString(joint2(t)));
+            BigDecimal nt = BigDecimal.valueOf(t);
+            nt = nt.add(BigDecimal.valueOf(0.5));
+            t = nt.doubleValue();
+
         }
-
-
     }
 
 //    /**
@@ -128,16 +140,58 @@ public class Controller {
 //    }
 
     /**
-     * 支撑腿轨迹
-     *
+     * 右前腿 先摆动后支撑
+     * @param t 实时时间
      **/
-    static double[] joint(double t){
+    static double[] joint1(double t){
+        double[] jointResult = new double[6];
+        t = new BigDecimal(t % (2*Tm)).doubleValue();
+        if(t<Tm){
+            xTrajectorySwing = s*(t/Tm-1/(2*PI)*Math.sin((2*PI)*t/Tm));
+            yTrajectorySwing = 0;
+            if(t>=0 && t<Tm/2)
+                zTrajectorySwing = 2*h*(t/Tm-1/(4*PI)*Math.sin((4*PI)*t/Tm));
+            if(t>=Tm/2 && t<Tm)
+                zTrajectorySwing = -2*h*(t/Tm-1/(4*PI)*Math.sin((4*PI)*t/Tm))+2*h;
+        }else{
+            yTrajectorySwing = 0;
+            zTrajectorySwing = 0;
+            xTrajectorySwing = s - s/(2*PI)*(2*PI*(t-Tm)/Tm-Math.sin(2*PI*(t-Tm)/Tm));
+        }
 
+        xTrajectorySwing = BigDecimal.valueOf(xTrajectorySwing).setScale(5,BigDecimal.ROUND_HALF_UP).doubleValue();
+        yTrajectorySwing = BigDecimal.valueOf(yTrajectorySwing).setScale(5,BigDecimal.ROUND_HALF_UP).doubleValue();
+        zTrajectorySwing = BigDecimal.valueOf(zTrajectorySwing).setScale(5,BigDecimal.ROUND_HALF_UP).doubleValue();
+        jointResult = jointAngleRF(xTrajectorySwing,yTrajectorySwing,zTrajectorySwing);
+        return jointResult;
+    }
+
+    static double[] joint2(double t){
+        double[] jointResult = new double[6];
+        t = new BigDecimal(t % (2*Tm)).doubleValue();
+        if(t<Tm){
+            yTrajectorySwing = 0;
+            zTrajectorySwing = 0;
+            xTrajectorySwing = s - s/(2*PI)*(2*PI*(t-Tm)/Tm-Math.sin(2*PI*(t-Tm)/Tm));
+        }else{
+            xTrajectorySwing = s*(t/Tm-1/(2*PI)*Math.sin((2*PI)*t/Tm));
+            yTrajectorySwing = 0;
+            if(t>=0 && t<Tm/2)
+                zTrajectorySwing = 2*h*(t/Tm-1/(4*PI)*Math.sin((4*PI)*t/Tm));
+            if(t>=Tm/2 && t<Tm)
+                zTrajectorySwing = -2*h*(t/Tm-1/(4*PI)*Math.sin((4*PI)*t/Tm))+2*h;
+        }
+
+        xTrajectorySwing = BigDecimal.valueOf(xTrajectorySwing).setScale(5,BigDecimal.ROUND_HALF_UP).doubleValue();
+        yTrajectorySwing = BigDecimal.valueOf(yTrajectorySwing).setScale(5,BigDecimal.ROUND_HALF_UP).doubleValue();
+        zTrajectorySwing = BigDecimal.valueOf(zTrajectorySwing).setScale(5,BigDecimal.ROUND_HALF_UP).doubleValue();
+        jointResult = jointAngleRF(xTrajectorySwing,yTrajectorySwing,zTrajectorySwing);
+        return jointResult;
     }
 
     /**
-     * 逆运动学解算 右前腿
-     * @param p1,p2,p3 x,y,z方向
+     * 逆运动学解算 右前腿 机身坐标系下
+     * @param p1,p2,p3 x,y,z方向过渡坐标系下位移
      *
     */
     static double[] jointAngleRF (double p1,double p2,double p3){
@@ -154,6 +208,13 @@ public class Controller {
             y = 2 * Math.atan((a + Math.sqrt(Math.pow(a, 2) - b * L3 * Math.sin(z) + b * (p1 - xRef))) / b);
         }
 
+        result[0] = x;
+        result[1] = y;
+        result[2] = z;
+
+        result[3] = x;
+        result[4] = y;
+        result[5] = z;
         result[0] = BigDecimal.valueOf(x).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue();
         result[1] = BigDecimal.valueOf(y).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue();
         result[2] = BigDecimal.valueOf(z).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue();
