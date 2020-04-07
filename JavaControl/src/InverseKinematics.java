@@ -1,3 +1,4 @@
+// 正确的正逆运动学 留存
 // File:          JavaController.java
 // Date:          2020/04/03
 // Description:
@@ -27,46 +28,32 @@ public class InverseKinematics {
 
     public static final double PI = 3.14;
 
-    // This is the main function of your controller.
-    // It creates an instance of your Robot instance and
-    // it uses its function(s).
-    // Note that only one instance of Robot should be created in
-    // a controller program.
-    // The arguments of the main function can be specified by the
-    // "controllerArgs" field of the Robot node
+    // 定义摆动腿足端轨迹
+    public static double xTrajectorySwing;
+    public static double yTrajectorySwing;
+    public static double zTrajectorySwing;
+
+    // 定义支撑腿足端轨迹
+    public double xTrajectorySupport;
+    public double yTrajectorySupport;
+    public double zTrajectorySupport;
+
+    // 定义摆动周期
+    public static double Tm = 2;
+
+    // 定义步长、步高
+    public static double s = 0.1;
+    public static double h = 0.2;
+
     public static void main(String[] args) {
 //        double[] angle = new double[]{0,0.262,-0.524}; //初始位置
         double[] angle = new double[]{0,0,0};
+        double[] position = new double[]{0.4,0.18,-0.7};
         System.out.println(Arrays.toString(Kinematics(angle)));
 //       double[] position = new double[]{0.39428,0.18,-0.69884};
-        System.out.println(Arrays.toString(InverseKinematics(Kinematics(angle))));
+        System.out.println(Arrays.toString(InverseKinematics(position)));
 
-        // create the Robot instance.
-//        Robot robot = new Robot();
-//        Motor motor = robot.getMotor();
-        // get the time step of the current world.
-//        int timeStep = (int) Math.round(robot.getBasicTimeStep());
 
-        // You should insert a getDevice-like function in order to get the
-        // instance of a device of the robot. Something like:
-        //  Motor motor = robot.getMotor("motorname");
-        //  DistanceSensor ds = robot.getDistanceSensor("dsname");
-        //  ds.enable(timeStep);
-
-        // Main loop:
-        // - perform simulation steps until Webots is stopping the controller
-//        while (robot.step(timeStep) != -1) {
-//            // Read the sensors:
-//            // Enter here functions to read sensor data, like:
-//            //  double val = ds.getValue();
-//
-//            // Process sensor data here.
-//
-//            // Enter here functions to send actuator commands, like:
-//            //  motor.setPosition(10.0);
-//        };
-
-        // Enter here exit cleanup code.
     }
 
     /**
@@ -79,9 +66,6 @@ public class InverseKinematics {
         double x = angle[0];
         double y = angle[1];
         double z = angle[2];
-//        double p1 = L2*Math.sin(y) + L3*Math.sin(y+z) + X_REF;
-//        double p2 = Math.sin(x)*(L3*Math.cos(y+z) + L2*Math.cos(y) + L1) + Y_REF;
-//        double p3 = -(L1*Math.cos(x) + L2*Math.cos(x)*Math.cos(y) + L3*Math.cos(x)*Math.cos(y+z)) + Z_REF;
 
         BigDecimal p1 = BigDecimal.valueOf(L2*Math.sin(y) + L3*Math.sin(y+z) + X_REF).setScale(5,BigDecimal.ROUND_HALF_UP);
         BigDecimal p2 = BigDecimal.valueOf(Math.sin(x)*(L3*Math.cos(y+z) + L2*Math.cos(y) + L1) + Y_REF).setScale(5,BigDecimal.ROUND_HALF_UP);;
@@ -89,9 +73,6 @@ public class InverseKinematics {
         position[0] = p1.doubleValue();
         position[1] = p2.doubleValue();
         position[2] = p3.doubleValue();
-//        position[0] = p1;
-//        position[1] = p2;
-//        position[2] = p3;
         return position;
     }
 
